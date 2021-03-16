@@ -2,6 +2,8 @@ DROP TABLE EMPLOYEE;
 DROP TABLE DEPARTMENT;
 DROP TABLE PROJECT;
 DROP TABLE WORKSON;
+--Normally you should create tables in the order of key hierarchy - make what doesnt need any keys first, then add others that depend on it.
+--Otherwise, you could create the tables without relationships, and then use ALTER TABLE queries after to set up the relationships.
 
 CREATE TABLE DEPARTMENT (
 DeptNo CHAR(4) PRIMARY KEY NOT NULL,
