@@ -1,0 +1,144 @@
+--Frankton Furniture courtesy of Abdul Rehman
+
+--Drop tables in the right order, reverse of creation
+
+drop table FF_ORDER_LINE
+drop table FF_PRODUCT
+drop table FF_ORDER
+drop table FF_CUSTOMER
+drop table FF_EMPLOYEE
+drop table FF_DEPARTMENT
+
+
+create table FF_DEPARTMENT (
+  D_NUM         decimal (2,0) not null,
+  D_NAME        varchar (15) unique ,
+   primary key (D_NUM)
+ );
+
+create table FF_EMPLOYEE (
+  E_NUM         decimal (5,0),
+  SURNAME       varchar (15),
+  GIVEN         varchar (10),
+  CITY          varchar (10),
+  DEPT          decimal (2,0),
+  MGR_ID	decimal (5,0),
+  DOB           date constraint DOB_NN not null,
+  SALARY        decimal (7,2),
+  OWNS_CAR      CHAR (1),
+  primary key (E_NUM),
+  foreign key (DEPT) references FF_DEPARTMENT (D_NUM),
+  constraint    SAL_CHK check (SALARY > 5000),
+  constraint    CAR_CHK check (OWNS_CAR in ('Y', 'N')) );
+
+create table FF_CUSTOMER (
+  CUST_ID 	varchar (4) not null,
+  CUST_NAME 	varchar (30) unique ,
+  ADDRESS 	varchar (30),
+  CITY 		varchar (15),
+  PHONE 	varchar (10),
+ primary key (CUST_ID),
+  );
+
+create table FF_ORDER (
+  ORDER_NO 	varchar (3) not null,
+  CUST_ID 	varchar (4),
+  ODATE 	date,
+  SALES_REP	decimal (5,0),
+  primary key (ORDER_NO),
+  foreign key (CUST_ID) references FF_CUSTOMER(CUST_ID),
+  foreign key (SALES_REP) references FF_EMPLOYEE (E_NUM) );
+
+
+create table FF_PRODUCT (
+  PROD_ID 	varchar (4),
+  DESCRIPTION 	varchar (20),
+  UNIT_PRICE 	decimal (7,2),
+  primary key (PROD_ID),
+  
+  constraint 	PRICE_CHK check (UNIT_PRICE between 0 and 5000) );
+
+create table FF_ORDER_LINE (
+  ORDER_NO 	varchar (3),
+  PROD_ID  	varchar (4),
+  QUANTITY 	decimal (4,0),
+  primary key (ORDER_NO, PROD_ID),
+  foreign key (ORDER_NO) references FF_ORDER(ORDER_NO),
+  foreign key (PROD_ID) references FF_PRODUCT(PROD_ID),
+  constraint	Q_CHK check (QUANTITY > 0) );
+
+  insert into FF_DEPARTMENT values (16, 'Sales');
+insert into FF_DEPARTMENT values (45, 'Manufacturing');
+insert into FF_DEPARTMENT values (67, 'Human Resources');
+insert into FF_DEPARTMENT values (77, 'Finance');
+
+insert into FF_EMPLOYEE values (11231,'Russel',    'David',    'Frankton',     45, 11231, '18-Dec-1977', 10017.23, 'N');
+insert into FF_EMPLOYEE values (49275,'Harrison',  'Louis',    'Frankton',     16, 49275, '10-Aug-1978',     null, 'Y');
+insert into FF_EMPLOYEE values (87110,'Smith',     'Robbie',   'Wanaka',       77, 87110, '19-Mar-1958',  9118.10, 'N');
+insert into FF_EMPLOYEE values (11354,'MCArthur',  'Helen',    'Queenstown',   67, 11354, '15-Mar-1963', 11621.34, null);
+insert into FF_EMPLOYEE values (22412,'Stewart',   'Bob',      'Wanaka',       45, 11231, '01-Jan-1955',  7815.35, 'N');
+insert into FF_EMPLOYEE values (23009,'Fallow',    'Margaret', 'Wanaka',       16, 49275, '09-Sep-1973',  7123.33, 'Y');
+insert into FF_EMPLOYEE values (33143,'Cunningham','Anna',     'Frankton',     45, 11231, '12-Apr-1965',  6917.89, 'Y');
+insert into FF_EMPLOYEE values (41342,'Carter',    'Justine',  'Wanaka',       16, 49275, '08-Jan-1978',  7513.88, 'Y');
+insert into FF_EMPLOYEE values (43334,'Crawford',  'Michael',  'Wanaka',       16, 49275, '24-Jan-1964',  8917.50, 'Y');
+insert into FF_EMPLOYEE values (44288,'Coburn',    'Paul',     'Queenstown',   16, 49275, '19-Jul-1970', 10125.23, 'Y');
+                                                                                                                                
+insert into FF_CUSTOMER values ('2100','Coburn Furniture.',    'Tay St',       'Frankton',   '04 342563');
+insert into FF_CUSTOMER values ('2785','Davis Stores',         'Manson Drive', 'Wanaka',     '03 352887');
+insert into FF_CUSTOMER values ('3211','Taylors Furniture',    'Drake Road',   'Frankton',   '04 643447');
+insert into FF_CUSTOMER values ('4642','Jones Furniture Est.', 'Park Street',  'Wanaka',     '03 665980');
+insert into FF_CUSTOMER values ('8972','Silent Night Shop',    'Queen Street', 'Queenstown', '06 553112');
+
+insert into FF_ORDER values ('001','2100','01-May-1997', 43334);
+insert into FF_ORDER values ('002','2785','09-May-1997', 23009);
+insert into FF_ORDER values ('003','2100','04-Jul-1997', 23009);
+insert into FF_ORDER values ('004','2785','01-Aug-1997', 49275);
+insert into FF_ORDER values ('005','4642','02-Aug-1997', 23009);
+
+insert into FF_PRODUCT values ('B128','Bookcase',        500);
+insert into FF_PRODUCT values ('C381','Cabinet',         375);
+insert into FF_PRODUCT values ('D036','Desk',            750);
+insert into FF_PRODUCT values ('K193','Kitchen Trolley', 395);
+insert into FF_PRODUCT values ('K211','King Size Bed',  1795);
+insert into FF_PRODUCT values ('T210','Table',          1250);
+
+insert into FF_ORDER_LINE values ('001', 'B128', 5);
+insert into FF_ORDER_LINE values ('001', 'C381', 3);
+insert into FF_ORDER_LINE values ('002', 'B128', 6);
+insert into FF_ORDER_LINE values ('003', 'C381', 1);
+insert into FF_ORDER_LINE values ('003', 'D036', 2);
+insert into FF_ORDER_LINE values ('003', 'T210', 2);
+insert into FF_ORDER_LINE values ('004', 'D036', 15);
+insert into FF_ORDER_LINE values ('005', 'B128', 1);
+insert into FF_ORDER_LINE values ('005', 'D036', 5);
+
+
+
+  SELECT d_name, given, surname
+  FROM FF_EMPLOYEE, FF_DEPARTMENT
+  WHERE FF_DEPARTMENT.D_NUM = FF_EMPLOYEE.dept
+  ORDER BY D_name, surname, given;
+
+  SELECT d_name, given, surname 
+  FROM FF_EMPLOYEE AS e, FF_DEPARTMENT as d
+  WHERE d.D_NUM = e.dept
+  ORDER BY D_NAME, surname, given;
+
+  SELECT D_name, given, surname
+  FROM FF_EMPLOYEE, FF_DEPARTMENT
+  WHERE D_NUM = dept
+  ORDER BY D_name, surname, given;
+
+  SELECT cust_name, o.order_no, ol.prod_id, description, quantity, unit_price, quantity * unit_price AS total
+  FROM FF_customer AS c, FF_order AS O, FF_ORDER_LINE AS OL, FF_PRODUCT AS P
+  WHERE C.CUST_ID = o.CUST_ID
+	AND O.ORDER_NO = OL.ORDER_NO
+	AND OL.PROD_ID = P.PROD_ID
+  ORDER BY cust_name, order_no, prod_id;
+
+  -- Self Join
+  SELECT d.d_name, e.GIVEN, e.SURNAME, m.given, m.surname
+  FROM FF_EMPLOYEE AS e, FF_EMPLOYEE AS m, FF_DEPARTMENT AS d
+  WHERE e.DEPT=d.D_NUM AND e.MGR_ID = m.E_NUM
+  ORDER BY d.D_NAME;
+-- This is where we got up to on 23/03/21
