@@ -12,6 +12,7 @@ Phone char(14)
 CREATE TABLE TrainList(
 TrainID int IDENTITY(1,1) PRIMARY KEY,
 TrainName varchar(30)
+CurrentLocation varchar(50)
 );
 
 --Theres no weekday datatype that stores days as their plaintext values. There is an enum that goes from 1-7, but it is inconsistent depending on different regions. Personal solution is to hardcode the string values and clean them up on insertion.
